@@ -1,62 +1,178 @@
-Oblique Strategies App
-======================
+# Oblique Strategies
 
-This is a mobile web app, so try visiting it from your mobile device, if you haven't already.
+A modern web application for Brian Eno's Oblique Strategies, built with Vue 3, TypeScript, Vite, and Express.js.
 
-How to Run
-----------
+## Features
 
-Open `public/index.html` in your browser. That's it!
+- **Modern Tech Stack**: Vue 3 + TypeScript + Vite + Express.js
+- **Beautiful UI**: Material Design with Vuetify 3
+- **PWA Support**: Progressive Web App with offline capabilities
+- **Favorites System**: Save and manage your favorite strategies
+- **Responsive Design**: Works perfectly on desktop and mobile
+- **Type Safety**: Full TypeScript support with strict configuration
+- **Code Quality**: ESLint with strict rules for maintainable code
 
-Tech
-----
+## Tech Stack
 
-* [HTML5 Mobile Boilerplate](http://html5boilerplate.com/mobile) saves you a ton of work by gathering all the different `meta` tags, icons for your web apps, CSS reset/defaults all in one place.
-* Random fonts from [Google Web Fonts](http://www.google.com/webfonts).
-* Faves stored using HTML5 localStorage
-* Uses HTML5 application cache to allow the app to work offline
+### Frontend
+- **Vue 3** - Progressive JavaScript framework
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Fast build tool and dev server
+- **Vuetify 3** - Material Design component framework
+- **Pinia** - State management
+- **Vue Router** - Client-side routing
+- **Axios** - HTTP client
 
-#### Where's the good stuff?
+### Backend
+- **Express.js** - Web framework
+- **TypeScript** - Type-safe server code
+- **Helmet** - Security middleware
+- **CORS** - Cross-origin resource sharing
+- **Compression** - Response compression
+- **Morgan** - HTTP request logger
 
-This is the good stuff:
+### Development Tools
+- **ESLint** - Code linting with strict TypeScript rules
+- **Concurrently** - Run multiple commands simultaneously
+- **TSX** - TypeScript execution for development
 
-* `public/js/script.js`
-* `public/css/style.css`
+### Deployment
+- **Docker** - Containerization
+- **Render.com** - Cloud hosting platform
+- **PWA** - Progressive Web App capabilities
 
-What are oblique strategies?
-----------------------------
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone git@github.com-ericeisaman:EricEisaman/oblique-strategies.git
+cd oblique-strategies
+```
+
+2. Install dependencies:
+```bash
+npm run install-all
+```
+
+3. Start development servers:
+```bash
+npm run dev
+```
+
+This will start:
+- Frontend dev server on http://localhost:3000
+- Backend API server on http://localhost:5000
+
+### Development Commands
+
+```bash
+# Start development servers
+npm run dev
+
+# Build for production
+npm run build
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Lint checking (no auto-fix)
+npm run lint:check
+
+# Start production server
+npm start
+```
+
+## Project Structure
+
+```
+oblique-strategies/
+├── client/                 # Vue 3 frontend
+│   ├── src/
+│   │   ├── components/    # Vue components
+│   │   ├── views/         # Page components
+│   │   ├── stores/        # Pinia stores
+│   │   ├── plugins/       # Vue plugins
+│   │   ├── router/        # Vue Router
+│   │   └── types/         # TypeScript types
+│   ├── public/            # Static assets
+│   └── package.json       # Frontend dependencies
+├── server/                # Express.js backend
+│   ├── index.ts          # Server entry point
+│   └── tsconfig.json     # Server TypeScript config
+├── dist/                  # Build output
+├── package.json          # Root dependencies
+├── .eslintrc.js          # ESLint configuration
+├── render.yaml           # Render.com deployment
+├── Dockerfile            # Docker configuration
+└── README.md             # This file
+```
+
+## API Endpoints
+
+- `GET /api/health` - Health check endpoint
+- `GET /api/strategies` - Get all oblique strategies
+- `GET /api/strategies/random` - Get a random strategy
+
+## Deployment
+
+### Render.com
+
+The project is configured for automatic deployment on Render.com:
+
+1. Connect your GitHub repository to Render
+2. Use the `render.yaml` configuration
+3. Deploy as a Docker service
+
+### Docker
+
+Build and run with Docker:
+
+```bash
+# Build the image
+docker build -t oblique-strategies .
+
+# Run the container
+docker run -p 10000:10000 oblique-strategies
+```
+
+## What are Oblique Strategies?
 
 Oblique Strategies is a set of published cards created by Brian Eno and Peter Schmidt first published in 1975. Each card contains a phrase or cryptic remark which can be used to break a deadlock or dilemma situation.
 
-Read more on Wikipedia: <http://en.wikipedia.org/wiki/Oblique_Strategies>
+The strategies are designed to help artists, musicians, and creative professionals overcome creative blocks and find new perspectives on their work.
 
-Email me at <matt@ruten.ca>
+## Credits
 
-Credits
--------
+- **Oblique Strategies** © 1975, 1978, and 1979 Brian Eno/Peter Schmidt
+- **Original App**: Matt Ruten (matt@ruten.ca)
+- **Modern Implementation**: Eric Eisaman
 
-Oblique Strategies © 1975, 1978, and 1979 Brian Eno/Peter Schmidt 
-Read about Oblique Strategies: <http://www.rtqe.net/ObliqueStrategies/>
-Buy a deck here: <http://enoshop.co.uk/shop/oblique/>
+## License
 
-Icon font by P.J. Onori
-Creative Commons Attribution-ShareAlike 3.0 Unported License
-<http://somerandomdude.com/work/iconic/>
+MIT License - see LICENSE file for details.
 
+## Contributing
 
-For Reference:
---------------
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run linting and type checking
+5. Submit a pull request
 
-Local Storage
+## Development Notes
 
-* <http://operationmobile.com/how-to-use-html5-local-storage-with-jquery-mobile/>
-* <http://stackoverflow.com/questions/2989284/max-size-of-localstorage-values>
-
-TO DO:
-------
-
-* ~~Set caching headers so that the app can run without a network connection (be inspired in the subway!)~~
-* ~~Finish creating the various mobile app start screens~~
-* ~~Add bookmark bubble plugin to promote adding app to the homescreen on mobile devices~~
-* ~~Add feedback to show when a strategy is faved (i.e. change star to be yellow?)~~
-* ~~Hide fave functionality when using browser that doesn't support localStorage~~
+- Uses strict TypeScript configuration for maximum type safety
+- ESLint rules enforce code quality and consistency
+- PWA configuration enables offline functionality
+- Responsive design works on all device sizes
+- Local storage for favorites persistence

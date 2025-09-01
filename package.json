@@ -1,0 +1,51 @@
+{
+  "name": "oblique-strategies",
+  "version": "1.0.0",
+  "description": "Modern web app for Brian Eno's Oblique Strategies",
+  "main": "dist/server/index.js",
+  "scripts": {
+    "cleanup": "pkill -f 'vite\\|node.*server\\|tsx' || true",
+    "dev": "npm run cleanup && concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "tsx watch server/index.ts",
+    "client:dev": "cd client && npm run dev",
+    "build": "npm run build:server && cd client && npm run build",
+    "build:server": "tsc -p server/tsconfig.json",
+    "build:client": "cd client && npm run build",
+    "install-all": "npm install && cd client && npm install",
+    "start": "node dist/server/index.js",
+    "type-check": "cd client && npm run t",
+    "lint": "eslint . --ext .ts,.tsx,.vue --fix",
+    "lint:check": "eslint . --ext .ts,.tsx,.vue",
+    "test:local": "npm run cleanup && concurrently \"npm run server:local\" \"npm run client:local\"",
+    "server:local": "tsx server/index.ts",
+    "client:local": "cd client && npm run dev"
+  },
+  "keywords": ["oblique", "strategies", "brian-eno", "creativity", "vue", "typescript"],
+  "author": "Eric Eisaman",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/morgan": "^1.9.9",
+    "@types/uuid": "^9.0.7",
+    "@types/node": "^20.9.0",
+    "typescript": "^5.2.2",
+    "tsx": "^4.6.0",
+    "nodemon": "^3.0.2",
+    "concurrently": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "@vue/eslint-config-typescript": "^12.0.0"
+  }
+}
