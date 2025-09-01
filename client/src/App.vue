@@ -1,5 +1,8 @@
 <template>
   <v-app>
+    <!-- PWA Handler Component -->
+    <PWAHandler ref="pwaHandler" />
+
     <!-- PWA Update Snackbar -->
     <v-snackbar
       v-model="updateAvailable"
@@ -40,6 +43,33 @@
       </div>
     </v-snackbar>
 
+    <!-- PWA Install Button -->
+    <v-snackbar
+      v-model="showInstallButton"
+      color="success"
+      timeout="-1"
+      location="bottom"
+    >
+      <div class="d-flex align-center">
+        <v-icon class="mr-2">mdi-download</v-icon>
+        <span>Install Divine for quick access</span>
+      </div>
+      <template v-slot:actions>
+        <v-btn
+          variant="text"
+          @click="handleInstall"
+        >
+          Install
+        </v-btn>
+        <v-btn
+          variant="text"
+          @click="showInstallButton = false"
+        >
+          Later
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <v-main>
       <router-view />
     </v-main>
@@ -47,23 +77,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { clientLogger } from '@/utils/logger';
+import { ref, computed } from 'vue';
+import PWAHandler from '@/components/PWAHandler.vue';
 
-const updateAvailable = ref(false);
-const offline = ref(false);
+const pwaHandler = ref<InstanceType<typeof PWAHandler> | null>(null);
 
-const handleUpdate = async (): Promise<void> => {
-  try {
-    if ('serviceWorker' in navigator) {
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (registration?.waiting) {
-        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        window.location.reload();
-      }
+const updateAvailable = computed({
+  get: () => pwaHandler.value?.updateAvailable ?? false,
+  set: (value: boolean) => {
+    if (pwaHandler.value) {
+      pwaHandler.value.updateAvailable = value;
     }
-  } catch (error) {
-    clientLogger.error('Error applying PWA update', error);
-  }
+  },
+});
+
+const offline = computed({
+  get: () => pwaHandler.value?.offline ?? false,
+  set: (value: boolean) => {
+    if (pwaHandler.value) {
+      pwaHandler.value.offline = value;
+    }
+  },
+});
+
+const showInstallButton = computed({
+  get: () => pwaHandler.value?.showInstallButton ?? false,
+  set: (value: boolean) => {
+    if (pwaHandler.value) {
+      pwaHandler.value.showInstallButton = value;
+    }
+  },
+});
+
+const handleUpdate = (): void => {
+  pwaHandler.value?.handleUpdate();
+};
+
+const handleInstall = (): void => {
+  pwaHandler.value?.handleInstall();
 };
 </script>

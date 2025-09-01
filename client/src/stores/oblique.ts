@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import axios from 'axios';
-import { clientLogger, withErrorHandling, type Result } from '@/utils/logger';
+import { clientLogger, withErrorHandling } from '@/utils/logger';
 import { indexedDBService } from '@/utils/indexedDB';
 
 interface StrategyResponse {

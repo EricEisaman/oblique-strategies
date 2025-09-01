@@ -174,28 +174,6 @@
                 </v-card-text>
               </v-card>
             </v-expand-transition>
-
-            <!-- PWA Install Prompt -->
-            <v-card
-              v-if="showInstallPrompt"
-              class="mt-4 mx-auto"
-              elevation="4"
-              rounded="lg"
-            >
-              <v-card-text class="text-center pa-4">
-                <v-icon size="48" color="primary" class="mb-2">mdi-download</v-icon>
-                <p class="text-body-1 mb-2">Install Divine</p>
-                <p class="text-caption text-grey-lighten-1 mb-3">Add to home screen for quick access</p>
-                <v-btn
-                  color="primary"
-                  @click="handleInstallPWA"
-                  :loading="installing"
-                >
-                  <v-icon left class="mr-2">mdi-plus</v-icon>
-                  Install App
-                </v-btn>
-              </v-card-text>
-            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -204,71 +182,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { useObliqueStore } from '@/stores/oblique';
 import { clientLogger, withErrorHandling } from '@/utils/logger';
 
-// Type definition for PWA install prompt
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
 const store = useObliqueStore();
-const showInstallPrompt = ref(false);
-const installing = ref(false);
-let deferredPrompt: BeforeInstallPromptEvent | null = null;
-
-const handleInstallPWA = (): void => {
-  handleInstallPWAAsync().catch((error) => {
-    clientLogger.error('PWA install failed', error);
-  });
-};
-
-const handleInstallPWAAsync = async (): Promise<void> => {
-  const result = await withErrorHandling(
-    installPWA,
-    'PWA installation failed',
-    clientLogger
-  );
-  
-  if (!result.success) {
-    clientLogger.error('PWA install failed', result.error);
-  }
-};
-
-const installPWA = async (): Promise<void> => {
-  if (deferredPrompt) {
-    installing.value = true;
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      clientLogger.info('PWA installed successfully');
-    }
-    deferredPrompt = null;
-    showInstallPrompt.value = false;
-    installing.value = false;
-  }
-};
 
 onMounted(async () => {
   const result = await withErrorHandling(
     store.initializeApp,
     'Failed to initialize app',
-    clientLogger
+    clientLogger,
   );
-  
+
   if (!result.success) {
     clientLogger.error('Failed to initialize app', result.error);
   }
-
-  // Handle PWA install prompt
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    if ('prompt' in e && 'userChoice' in e) {
-      deferredPrompt = e as BeforeInstallPromptEvent;
-      showInstallPrompt.value = true;
-    }
-  });
 });
 </script>
