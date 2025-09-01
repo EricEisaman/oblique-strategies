@@ -101,17 +101,6 @@ export default defineConfig({
         // Offline analytics
         offlineGoogleAnalytics: true,
       },
-      includeAssets: [
-        'favicon.ico',
-        'apple-touch-icon.png',
-        'icon-192.png',
-        'icon-256x256.png',
-        'icon-512.png',
-        'og-image.png',
-        'twitter-image.png',
-        'screenshot-wide.png',
-        'screenshot-narrow.png',
-      ],
       manifest: {
         name: 'Divine',
         short_name: 'Divine',
