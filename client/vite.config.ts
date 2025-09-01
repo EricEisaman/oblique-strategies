@@ -8,9 +8,69 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,svg,woff2,woff,eot,ttf}',
+          'manifest.webmanifest',
+        ],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
+          // Cache API responses for offline access
+          {
+            urlPattern: /^https?:\/\/localhost:\d+\/api\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Cache static assets with CacheFirst strategy
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          // Cache fonts with CacheFirst strategy
+          {
+            urlPattern: /\.(?:woff2?|eot|ttf|otf)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'fonts-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          // Cache CSS and JS files with StaleWhileRevalidate
+          {
+            urlPattern: /\.(?:css|js)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+              },
+            },
+          },
+          // Cache Google Fonts
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
@@ -19,9 +79,6 @@ export default defineConfig({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheKeyWillBeUsed: async ({ request }) => {
-                return `${request.url}?${Date.now()}`;
               },
             },
           },
@@ -37,23 +94,33 @@ export default defineConfig({
             },
           },
         ],
+        // Fallback for offline navigation
+        navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^(?!\/__).*/],
+        // Offline analytics
+        offlineGoogleAnalytics: true,
       },
       includeAssets: [
         'favicon.ico',
         'apple-touch-icon.png',
-        'masked-icon.svg',
+        'icon-192.png',
+        'icon-512.png',
+        'og-image.png',
+        'twitter-image.png',
+        'screenshot-wide.png',
+        'screenshot-narrow.png',
       ],
       manifest: {
-        name: 'Oblique Strategies',
-        short_name: 'Oblique Strategies',
-        description: 'Brian Eno\'s Oblique Strategies for creative inspiration',
-        theme_color: '#000000',
-        background_color: '#000000',
+        name: 'Divine',
+        short_name: 'Divine',
+        description: 'Brian Eno\'s Oblique Strategies for creative inspiration - Works offline',
+        theme_color: '#1976d2',
+        background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
-        categories: ['creativity', 'productivity'],
+        categories: ['creativity', 'productivity', 'utilities'],
         lang: 'en',
         icons: [
           {
@@ -63,8 +130,47 @@ export default defineConfig({
           },
           {
             src: '/apple-touch-icon.png',
-            sizes: '180x180',
+            sizes: '114x114',
             type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/icon-192.png',
+            sizes: '72x72',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/icon-512.png',
+            sizes: '114x114',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'New Strategy',
+            short_name: 'New',
+            description: 'Get a new oblique strategy',
+            url: '/?action=new',
+            icons: [
+              {
+                src: '/icon-192.png',
+                sizes: '72x72',
+              },
+            ],
+          },
+          {
+            name: 'Favorites',
+            short_name: 'Favs',
+            description: 'View your favorite strategies',
+            url: '/?action=favorites',
+            icons: [
+              {
+                src: '/icon-192.png',
+                sizes: '72x72',
+              },
+            ],
           },
         ],
       },

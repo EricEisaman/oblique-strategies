@@ -14,6 +14,42 @@ export interface ILogger {
   fatal(message: string, ...args: unknown[]): void;
 }
 
+// Result type for better error handling
+export type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+// Async result helper
+export const asyncResult = async <T>(
+  promise: Promise<T>
+): Promise<Result<T, Error>> => {
+  try {
+    const data = await promise;
+    return { success: true, data };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error : new Error(String(error))
+    };
+  }
+};
+
+// Error handling utility for async operations
+export const withErrorHandling = async <T>(
+  operation: () => Promise<T>,
+  errorMessage: string,
+  logger: ILogger
+): Promise<Result<T, Error>> => {
+  try {
+    const result = await operation();
+    return { success: true, data: result };
+  } catch (error) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error(errorMessage, errorObj);
+    return { success: false, error: errorObj };
+  }
+};
+
 export class Logger implements ILogger {
   private readonly level: LogLevel;
 
@@ -68,5 +104,4 @@ export class Logger implements ILogger {
 
 // Create logger instances
 export const logger = new Logger(LogLevel.Info);
-export const serverLogger = new Logger(LogLevel.Info);
 export const clientLogger = new Logger(LogLevel.Info);

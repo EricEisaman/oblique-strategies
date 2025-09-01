@@ -4,27 +4,50 @@
       <v-container fluid class="fill-height pa-0">
         <v-row no-gutters justify="center" align="center" class="fill-height">
           <v-col cols="12" sm="10" md="8" lg="6" xl="4" class="pa-4">
+            <!-- Divine Logo - Always at top center -->
+            <div class="text-center mb-6">
+              <div class="d-flex flex-column align-center">
+                <v-img
+                  src="/icon-256x256.png"
+                  alt="Divine Logo"
+                  :width="$vuetify.display.smAndDown ? 48 : 64"
+                  :height="$vuetify.display.smAndDown ? 48 : 64"
+                  class="mb-3"
+                  contain
+                />
+                <span class="text-h3 text-h4-sm text-h5-xs font-weight-light">
+                  Divine
+                </span>
+                <v-container class="pa-0">
+                  <v-row justify="center">
+                    <v-col cols="8" sm="6" md="4">
+                      <v-divider class="my-2"></v-divider>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </div>
+            </div>
+
+            <!-- Offline Status Indicator -->
+            <v-alert
+              v-if="store.isOffline"
+              type="info"
+              variant="tonal"
+              class="mb-4"
+              density="compact"
+            >
+              <template v-slot:prepend>
+                <v-icon>mdi-wifi-off</v-icon>
+              </template>
+              <span class="text-caption">Working offline - Using local strategies</span>
+            </v-alert>
+
             <!-- Main Strategy Card -->
             <v-card
               class="mx-auto"
               elevation="12"
               rounded="xl"
             >
-              <v-card-title class="text-center pa-6">
-                <div class="d-flex flex-column align-center">
-                  <span class="text-h3 text-h4-sm text-h5-xs font-weight-light mb-2">
-                    Oblique Strategies
-                  </span>
-                  <v-container class="pa-0">
-                    <v-row justify="center">
-                      <v-col cols="8" sm="6" md="4">
-                        <v-divider class="my-2"></v-divider>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </div>
-              </v-card-title>
-
               <v-card-text class="text-center pa-6">
                 <div class="d-flex align-center justify-center">
                   <p class="text-h5 text-h6-sm text-body-1-xs font-weight-regular">
@@ -32,6 +55,18 @@
                   </p>
                 </div>
               </v-card-text>
+
+              <!-- Star Button for Adding to Favorites -->
+              <v-card-actions class="justify-center pa-4 pt-0">
+                <v-btn
+                  :icon="store.isCurrentFavorite ? 'mdi-star' : 'mdi-star-outline'"
+                  :color="store.isCurrentFavorite ? 'amber' : 'grey'"
+                  size="large"
+                  variant="text"
+                  @click="store.addToFavorites"
+                  :disabled="!store.currentStrategy || store.currentStrategy.includes('Click')"
+                />
+              </v-card-actions>
 
               <v-card-actions class="justify-center pa-6 pt-0">
                 <v-btn
@@ -99,7 +134,7 @@
 
                       <template v-slot:append>
                         <v-btn
-                          icon="mdi-delete"
+                          icon="mdi-close"
                           variant="text"
                           size="small"
                           color="error"
@@ -109,6 +144,18 @@
                     </v-list-item>
                   </v-list>
                 </v-card-text>
+
+                <v-card-actions class="justify-center pa-4 pt-0">
+                  <v-btn
+                    variant="outlined"
+                    color="error"
+                    @click="store.clearFavorites"
+                    size="small"
+                  >
+                    <v-icon left class="mr-2">mdi-delete-sweep</v-icon>
+                    Clear All
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-expand-transition>
 
@@ -127,6 +174,28 @@
                 </v-card-text>
               </v-card>
             </v-expand-transition>
+
+            <!-- PWA Install Prompt -->
+            <v-card
+              v-if="showInstallPrompt"
+              class="mt-4 mx-auto"
+              elevation="4"
+              rounded="lg"
+            >
+              <v-card-text class="text-center pa-4">
+                <v-icon size="48" color="primary" class="mb-2">mdi-download</v-icon>
+                <p class="text-body-1 mb-2">Install Divine</p>
+                <p class="text-caption text-grey-lighten-1 mb-3">Add to home screen for quick access</p>
+                <v-btn
+                  color="primary"
+                  @click="handleInstallPWA"
+                  :loading="installing"
+                >
+                  <v-icon left class="mr-2">mdi-plus</v-icon>
+                  Install App
+                </v-btn>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -135,12 +204,71 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useObliqueStore } from '@/stores/oblique';
+import { clientLogger, withErrorHandling } from '@/utils/logger';
+
+// Type definition for PWA install prompt
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 const store = useObliqueStore();
+const showInstallPrompt = ref(false);
+const installing = ref(false);
+let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
-onMounted(() => {
-  void store.initializeApp();
+const handleInstallPWA = (): void => {
+  handleInstallPWAAsync().catch((error) => {
+    clientLogger.error('PWA install failed', error);
+  });
+};
+
+const handleInstallPWAAsync = async (): Promise<void> => {
+  const result = await withErrorHandling(
+    installPWA,
+    'PWA installation failed',
+    clientLogger
+  );
+  
+  if (!result.success) {
+    clientLogger.error('PWA install failed', result.error);
+  }
+};
+
+const installPWA = async (): Promise<void> => {
+  if (deferredPrompt) {
+    installing.value = true;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      clientLogger.info('PWA installed successfully');
+    }
+    deferredPrompt = null;
+    showInstallPrompt.value = false;
+    installing.value = false;
+  }
+};
+
+onMounted(async () => {
+  const result = await withErrorHandling(
+    store.initializeApp,
+    'Failed to initialize app',
+    clientLogger
+  );
+  
+  if (!result.success) {
+    clientLogger.error('Failed to initialize app', result.error);
+  }
+
+  // Handle PWA install prompt
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    if ('prompt' in e && 'userChoice' in e) {
+      deferredPrompt = e as BeforeInstallPromptEvent;
+      showInstallPrompt.value = true;
+    }
+  });
 });
 </script>

@@ -1,5 +1,5 @@
 {
-  "name": "oblique-strategies",
+  "name": "divine",
   "version": "1.0.0",
   "description": "Modern web app for Brian Eno's Oblique Strategies",
   "main": "dist/server/index.js",
