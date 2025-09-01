@@ -31,7 +31,7 @@ export default defineConfig({
         ];
 
         iconFiles.forEach(icon => {
-          const src = resolve(__dirname, 'public/icons', icon);
+          const src = resolve(__dirname, '..', 'icons_and_manifest', 'icons', icon);
           const dest = resolve(iconsDir, icon);
           if (existsSync(src)) {
             copyFileSync(src, dest);
