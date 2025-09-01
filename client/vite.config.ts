@@ -114,7 +114,7 @@ export default defineConfig({
       manifest: {
         name: 'Divine',
         short_name: 'Divine',
-        description: 'Brian Eno\'s Oblique Strategies for creative inspiration - Works offline',
+        description: 'Divine - Becoming a Sigma Scholar - Works offline',
         theme_color: '#1976d2',
         background_color: '#ffffff',
         display: 'standalone',
@@ -162,8 +162,8 @@ export default defineConfig({
             url: '/?action=new',
             icons: [
               {
-                src: '/icon-192.png',
-                sizes: '72x72',
+                src: '/icon-256x256.png',
+                sizes: '256x256',
               },
             ],
           },
@@ -174,8 +174,8 @@ export default defineConfig({
             url: '/?action=favorites',
             icons: [
               {
-                src: '/icon-192.png',
-                sizes: '72x72',
+                src: '/icon-256x256.png',
+                sizes: '256x256',
               },
             ],
           },
