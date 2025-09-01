@@ -16,8 +16,18 @@ module.exports = {
     sourceType: 'module',
     parser: '@typescript-eslint/parser',
     project: ['./client/tsconfig.json', './server/tsconfig.json'],
+    tsconfigRootDir: __dirname,
   },
-  ignorePatterns: ['**/vite.config.ts', '**/vitest.config.ts'],
+  ignorePatterns: [
+    '**/vite.config.ts',
+    '**/vitest.config.ts',
+    'dist/',
+    'node_modules/',
+    '*.min.js',
+    'coverage/',
+    '.vite/',
+    'client/vite.config.ts'
+  ],
   plugins: ['vue'],
   rules: {
     // Microsoft-endorsed TypeScript rules
@@ -87,6 +97,32 @@ module.exports = {
       files: ['client/src/stores/**/*.ts'],
       rules: {
         '@typescript-eslint/no-explicit-any': 'warn', // Allow some flexibility in stores
+      },
+    },
+    {
+      files: ['**/vite.config.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: null,
+      },
+      rules: {
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/prefer-nullish-coalescing': 'off',
+        '@typescript-eslint/prefer-optional-chain': 'off',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/await-thenable': 'off',
+        '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/require-await': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],

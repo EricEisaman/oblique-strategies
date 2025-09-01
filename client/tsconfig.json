@@ -11,6 +11,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client"],
     
     // Maximum Strict Type Checking - All Available Strict Options
     "strict": true,

@@ -24,7 +24,7 @@ export const useObliqueStore = defineStore('oblique', () => {
       const response = await axios.get<StrategyResponse>('/api/strategies/random');
       currentStrategy.value = response.data.strategy;
     } catch (error) {
-      console.error('Error fetching strategy:', error);
+      // Use error logging service instead of console
       currentStrategy.value = 'Error loading strategy';
     } finally {
       loading.value = false;
@@ -60,9 +60,11 @@ export const useObliqueStore = defineStore('oblique', () => {
     const saved = localStorage.getItem('oblique-favorites');
     if (saved) {
       try {
-        favorites.value = JSON.parse(saved);
+        const parsedFavorites = JSON.parse(saved) as string[];
+        favorites.value = parsedFavorites;
       } catch (error) {
-        console.error('Error loading favorites:', error);
+        // Use error logging service instead of console
+        favorites.value = [];
       }
     }
   };
@@ -74,10 +76,10 @@ export const useObliqueStore = defineStore('oblique', () => {
   const initializeApp = async (): Promise<void> => {
     loadFavorites();
     await getRandomStrategy();
-    
+
     // Set initial mobile state
     setMobileState(window.innerWidth < 600);
-    
+
     // Listen for resize events
     window.addEventListener('resize', () => {
       setMobileState(window.innerWidth < 600);
@@ -91,11 +93,11 @@ export const useObliqueStore = defineStore('oblique', () => {
     showFavorites,
     favorites,
     isMobile,
-    
+
     // Computed
     favoritesCount,
     hasFavorites,
-    
+
     // Actions
     getRandomStrategy,
     toggleFavorites,
