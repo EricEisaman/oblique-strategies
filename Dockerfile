@@ -28,7 +28,11 @@ RUN chmod -R 755 client/dist/ && \
 
 # Verify the build output
 RUN ls -la client/dist/ && \
-    echo "Build verification complete"
+    echo "Build verification complete" && \
+    echo "Checking for icon files:" && \
+    ls -la client/dist/*.png || echo "No PNG files found" && \
+    echo "Checking for icon-256x256.png specifically:" && \
+    ls -la client/dist/icon-256x256.png || echo "icon-256x256.png not found"
 
 # Expose port
 EXPOSE 10000
