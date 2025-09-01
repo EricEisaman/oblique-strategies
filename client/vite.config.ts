@@ -1,36 +1,59 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
+import { copyFileSync, mkdirSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
     vue(),
+    {
+      name: 'copy-icons',
+      writeBundle() {
+        // Ensure icons directory exists
+        const iconsDir = resolve(__dirname, 'dist/icons');
+        if (!existsSync(iconsDir)) {
+          mkdirSync(iconsDir, { recursive: true });
+        }
+
+        // Copy icon files
+        const iconFiles = [
+          'icon-192x192.png',
+          'icon-512x512.png',
+          'icon-48x48.png',
+          'icon-72x72.png',
+          'icon-96x96.png',
+          'icon-128x128.png',
+          'icon-144x144.png',
+          'icon-152x152.png',
+          'icon-256x256.png',
+          'icon-384x384.png',
+        ];
+
+        iconFiles.forEach(icon => {
+          const src = resolve(__dirname, 'public/icons', icon);
+          const dest = resolve(iconsDir, icon);
+          if (existsSync(src)) {
+            copyFileSync(src, dest);
+            console.log(`✅ Copied icon: ${icon}`);
+          } else {
+            console.warn(`⚠️  Icon not found: ${icon}`);
+          }
+        });
+      },
+    },
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       includeAssets: [
         'favicon.ico',
         'apple-touch-icon.png',
-        'icon-48x48.png',
-        'icon-72x72.png',
-        'icon-96x96.png',
-        'icon-128x128.png',
-        'icon-144x144.png',
-        'icon-152x152.png',
-        'icon-192x192.png',
-        'icon-256x256.png',
-        'icon-384x384.png',
-        'icon-512x512.png',
-        'manifest.webmanifest',
-        'browserconfig.xml'
+        'icons/icon-192x192.png',
+        'icons/icon-512x512.png',
+        'icons/icon-256x256.png',
       ],
       workbox: {
-        globPatterns: [
-          '**/*.{js,css,html,ico,png,svg,woff2,woff,eot,ttf}',
-          'manifest.webmanifest',
-          'icon-256x256.png',
-        ],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
@@ -87,33 +110,7 @@ export default defineConfig({
               },
             },
           },
-          // Cache Google Fonts
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'gstatic-fonts-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-            },
-          },
         ],
-        // Fallback for offline navigation
-        navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^(?!\/__).*/],
         // Offline analytics
         offlineGoogleAnalytics: true,
       },
@@ -131,53 +128,18 @@ export default defineConfig({
         lang: 'en',
         icons: [
           {
-            src: '/icon-48x48.png',
-            sizes: '48x48',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-72x72.png',
-            sizes: '72x72',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-96x96.png',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-128x128.png',
-            sizes: '128x128',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-144x144.png',
-            sizes: '144x144',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-152x152.png',
-            sizes: '152x152',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-192x192.png',
+            src: '/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/icon-256x256.png',
-            sizes: '256x256',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-384x384.png',
-            sizes: '384x384',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-512x512.png',
+            src: '/icons/icon-512x512.png',
             sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/icons/icon-256x256.png',
+            sizes: '256x256',
             type: 'image/png',
           },
         ],
@@ -189,7 +151,7 @@ export default defineConfig({
             url: '/?action=new',
             icons: [
               {
-                src: '/icon-256x256.png',
+                src: '/icons/icon-256x256.png',
                 sizes: '256x256',
               },
             ],
@@ -201,7 +163,7 @@ export default defineConfig({
             url: '/?action=favorites',
             icons: [
               {
-                src: '/icon-256x256.png',
+                src: '/icons/icon-256x256.png',
                 sizes: '256x256',
               },
             ],
@@ -226,17 +188,6 @@ export default defineConfig({
       external: [],
       output: {
         manualChunks: undefined,
-        assetFileNames: (assetInfo) => {
-          const info = assetInfo.name?.split('.') || [];
-          const ext = info[info.length - 1];
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext || '')) {
-            return 'assets/images/[name]-[hash][extname]';
-          }
-          if (/woff2?|eot|ttf|otf/i.test(ext || '')) {
-            return 'assets/fonts/[name]-[hash][extname]';
-          }
-          return 'assets/[name]-[hash][extname]';
-        },
       },
     },
     commonjsOptions: {
@@ -249,15 +200,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src',
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
-          @import "@/styles/variables.scss";
-        `,
-      },
     },
   },
 });
