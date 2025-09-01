@@ -41,12 +41,20 @@ app.get('/api/debug/static', (_req, res) => {
   const staticExists = fs.existsSync(staticPath);
   const iconExists = fs.existsSync(iconPath);
   
+  // Check what's in the icons directory
+  const iconsDirPath = path.join(staticPath, 'icons');
+  let iconsDirContents: string[] = [];
+  if (fs.existsSync(iconsDirPath)) {
+    iconsDirContents = fs.readdirSync(iconsDirPath);
+  }
+  
   res.json({
     staticPath,
     staticExists,
     iconPath,
     iconExists,
-    staticFiles: staticExists ? fs.readdirSync(staticPath) : []
+    staticFiles: staticExists ? fs.readdirSync(staticPath) : [],
+    iconsDirContents,
   });
 });
 
