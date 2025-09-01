@@ -104,6 +104,7 @@ export default defineConfig({
         'favicon.ico',
         'apple-touch-icon.png',
         'icon-192.png',
+        'icon-256x256.png',
         'icon-512.png',
         'og-image.png',
         'twitter-image.png',
@@ -137,6 +138,12 @@ export default defineConfig({
           {
             src: '/icon-192.png',
             sizes: '72x72',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+          {
+            src: '/icon-256x256.png',
+            sizes: '256x256',
             type: 'image/png',
             purpose: 'any maskable',
           },
