@@ -36,7 +36,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/debug/static', (_req, res) => {
   const fs = require('fs');
   const staticPath = path.join(__dirname, '../../client/dist');
-  const iconPath = path.join(staticPath, 'icon-256x256.png');
+  const iconPath = path.join(staticPath, 'icons', 'icon-256x256.png');
   
   const staticExists = fs.existsSync(staticPath);
   const iconExists = fs.existsSync(iconPath);
