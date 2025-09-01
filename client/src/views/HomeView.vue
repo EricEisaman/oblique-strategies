@@ -15,7 +15,7 @@
                   :loading="logoClicked"
                 >
                   <v-img
-                    src="/icon-256x256.png"
+                    src="/icons/icon-256x256.png"
                     alt="Divine Logo"
                     :width="$vuetify.display.smAndDown ? 48 : 64"
                     :height="$vuetify.display.smAndDown ? 48 : 64"
