@@ -18,11 +18,36 @@ app.use(morgan('combined'));
 // Serve static files from the client dist directory
 const staticPath = path.join(__dirname, '../../client/dist');
 serverLogger.info('Static files path configured', { path: staticPath });
-app.use(express.static(staticPath));
+app.use(express.static(staticPath, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    }
+  }
+}));
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Debug endpoint to check static files
+app.get('/api/debug/static', (_req, res) => {
+  const fs = require('fs');
+  const staticPath = path.join(__dirname, '../../client/dist');
+  const iconPath = path.join(staticPath, 'icon-256x256.png');
+  
+  const staticExists = fs.existsSync(staticPath);
+  const iconExists = fs.existsSync(iconPath);
+  
+  res.json({
+    staticPath,
+    staticExists,
+    iconPath,
+    iconExists,
+    staticFiles: staticExists ? fs.readdirSync(staticPath) : []
+  });
 });
 
 // API routes for oblique strategies

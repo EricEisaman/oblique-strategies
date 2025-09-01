@@ -7,14 +7,21 @@
             <!-- Divine Logo - Always at top center -->
             <div class="text-center mb-6">
               <div class="d-flex flex-column align-center">
-                <v-img
-                  src="/icon-256x256.png"
-                  alt="Divine Logo"
-                  :width="$vuetify.display.smAndDown ? 48 : 64"
-                  :height="$vuetify.display.smAndDown ? 48 : 64"
+                <v-btn
+                  icon
+                  variant="text"
                   class="mb-3"
-                  contain
-                />
+                  @click="handleLogoClick"
+                  :loading="logoClicked"
+                >
+                  <v-img
+                    src="/icon-256x256.png"
+                    alt="Divine Logo"
+                    :width="$vuetify.display.smAndDown ? 48 : 64"
+                    :height="$vuetify.display.smAndDown ? 48 : 64"
+                    contain
+                  />
+                </v-btn>
                 <span class="text-h3 text-h4-sm text-h5-xs font-weight-light">
                   Divine
                 </span>
@@ -182,11 +189,34 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useObliqueStore } from '@/stores/oblique';
 import { clientLogger, withErrorHandling } from '@/utils/logger';
 
 const store = useObliqueStore();
+const logoClicked = ref(false);
+
+const handleLogoClick = async (): Promise<void> => {
+  logoClicked.value = true;
+  
+  const result = await withErrorHandling(
+    async () => {
+      await store.getRandomStrategy();
+      clientLogger.info('Logo clicked - new strategy generated');
+    },
+    'Failed to generate new strategy from logo click',
+    clientLogger
+  );
+  
+  if (!result.success) {
+    clientLogger.error('Logo click failed', result.error);
+  }
+  
+  // Reset animation after a short delay
+  setTimeout(() => {
+    logoClicked.value = false;
+  }, 300);
+};
 
 onMounted(async () => {
   const result = await withErrorHandling(
