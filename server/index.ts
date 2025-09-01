@@ -17,8 +17,7 @@ app.use(morgan('combined'));
 
 // Serve static files from the client dist directory
 const staticPath = path.join(__dirname, '../client/dist');
-console.log('Static files path:', staticPath);
-console.log('Static files exist:', require('fs').existsSync(staticPath));
+serverLogger.info('Static files path configured', { path: staticPath });
 app.use(express.static(staticPath));
 
 // Health check endpoint
@@ -248,8 +247,7 @@ app.get('/api/strategies/random', (_req, res) => {
 // Serve the Vue app for all other routes
 app.get('*', (_req, res) => {
   const indexPath = path.join(__dirname, '../client/dist/index.html');
-  console.log('Index file path:', indexPath);
-  console.log('Index file exists:', require('fs').existsSync(indexPath));
+  serverLogger.info('Serving Vue app', { path: indexPath });
   res.sendFile(indexPath);
 });
 
