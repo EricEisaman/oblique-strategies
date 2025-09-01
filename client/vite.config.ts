@@ -13,6 +13,7 @@ export default defineConfig({
         globPatterns: [
           '**/*.{js,css,html,ico,png,svg,woff2,woff,eot,ttf}',
           'manifest.webmanifest',
+          'icon-256x256.png',
         ],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
