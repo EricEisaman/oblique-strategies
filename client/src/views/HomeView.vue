@@ -7,21 +7,29 @@
             <!-- Divine Logo - Always at top center -->
             <div class="text-center mb-6">
               <div class="d-flex flex-column align-center">
-                <v-btn
-                  icon
-                  variant="text"
-                  class="mb-3"
-                  @click="handleLogoClick"
-                  :loading="logoClicked"
-                >
-                  <v-img
-                    src="/icons/icon-256x256.png"
-                    alt="Divine Logo"
-                    :width="$vuetify.display.smAndDown ? 48 : 64"
-                    :height="$vuetify.display.smAndDown ? 48 : 64"
-                    contain
-                  />
-                </v-btn>
+                <v-scale-transition>
+                  <v-btn
+                    icon
+                    variant="text"
+                    class="mb-3"
+                    elevation="12"
+                    :color="isHovered ? 'secondary' : 'primary'"
+                    size="x-large"
+                    @click="handleLogoClick"
+                    :loading="logoClicked"
+                    :elevation="isHovered ? 24 : 12"
+                    @mouseenter="isHovered = true"
+                    @mouseleave="isHovered = false"
+                  >
+                    <v-img
+                      src="/icons/icon-256x256.png"
+                      alt="Divine Logo"
+                      :width="$vuetify.display.smAndDown ? 48 : 64"
+                      :height="$vuetify.display.smAndDown ? 48 : 64"
+                      contain
+                    />
+                  </v-btn>
+                </v-scale-transition>
                 <span class="text-h3 text-h4-sm text-h5-xs font-weight-light">
                   Divine
                 </span>
@@ -195,6 +203,7 @@ import { clientLogger, withErrorHandling } from '@/utils/logger';
 
 const store = useObliqueStore();
 const logoClicked = ref(false);
+const isHovered = ref(false);
 
 const handleLogoClick = async (): Promise<void> => {
   logoClicked.value = true;
