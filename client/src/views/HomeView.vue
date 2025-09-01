@@ -12,7 +12,6 @@
                     icon
                     variant="text"
                     class="mb-3"
-                    elevation="12"
                     :color="isHovered ? 'secondary' : 'primary'"
                     size="x-large"
                     @click="handleLogoClick"
