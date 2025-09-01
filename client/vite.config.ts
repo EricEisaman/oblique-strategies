@@ -9,6 +9,22 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      includeAssets: [
+        'favicon.ico',
+        'apple-touch-icon.png',
+        'icon-48x48.png',
+        'icon-72x72.png',
+        'icon-96x96.png',
+        'icon-128x128.png',
+        'icon-144x144.png',
+        'icon-152x152.png',
+        'icon-192x192.png',
+        'icon-256x256.png',
+        'icon-384x384.png',
+        'icon-512x512.png',
+        'manifest.webmanifest',
+        'browserconfig.xml'
+      ],
       workbox: {
         globPatterns: [
           '**/*.{js,css,html,ico,png,svg,woff2,woff,eot,ttf}',
