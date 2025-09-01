@@ -15,7 +15,13 @@
                   <span class="text-h3 text-h4-sm text-h5-xs font-weight-light mb-2">
                     Oblique Strategies
                   </span>
-                  <v-divider class="my-2" style="width: 60%"></v-divider>
+                  <v-container class="pa-0">
+                    <v-row justify="center">
+                      <v-col cols="8" sm="6" md="4">
+                        <v-divider class="my-2"></v-divider>
+                      </v-col>
+                    </v-row>
+                  </v-container>
                 </div>
               </v-card-title>
 

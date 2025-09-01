@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import axios from 'axios';
+import { clientLogger } from '@/utils/logger';
 
 interface StrategyResponse {
   strategy: string;
@@ -23,8 +24,9 @@ export const useObliqueStore = defineStore('oblique', () => {
     try {
       const response = await axios.get<StrategyResponse>('/api/strategies/random');
       currentStrategy.value = response.data.strategy;
+      clientLogger.info('Successfully fetched random strategy');
     } catch (error) {
-      // Use error logging service instead of console
+      clientLogger.error('Error fetching strategy', error);
       currentStrategy.value = 'Error loading strategy';
     } finally {
       loading.value = false;
@@ -39,17 +41,20 @@ export const useObliqueStore = defineStore('oblique', () => {
     if (currentStrategy.value && !favorites.value.includes(currentStrategy.value)) {
       favorites.value.push(currentStrategy.value);
       saveFavorites();
+      clientLogger.info('Added strategy to favorites', currentStrategy.value);
     }
   };
 
   const removeFavorite = (strategy: string): void => {
     favorites.value = favorites.value.filter(fav => fav !== strategy);
     saveFavorites();
+    clientLogger.info('Removed strategy from favorites', strategy);
   };
 
   const clearFavorites = (): void => {
     favorites.value = [];
     saveFavorites();
+    clientLogger.info('Cleared all favorites');
   };
 
   const saveFavorites = (): void => {
@@ -60,10 +65,16 @@ export const useObliqueStore = defineStore('oblique', () => {
     const saved = localStorage.getItem('oblique-favorites');
     if (saved) {
       try {
-        const parsedFavorites = JSON.parse(saved) as string[];
-        favorites.value = parsedFavorites;
+        const parsed: unknown = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
+          favorites.value = parsed;
+          clientLogger.info('Successfully loaded favorites from localStorage', { count: parsed.length });
+        } else {
+          clientLogger.warn('Invalid favorites format in localStorage, resetting to empty array');
+          favorites.value = [];
+        }
       } catch (error) {
-        // Use error logging service instead of console
+        clientLogger.error('Error loading favorites from localStorage', error);
         favorites.value = [];
       }
     }
@@ -74,6 +85,7 @@ export const useObliqueStore = defineStore('oblique', () => {
   };
 
   const initializeApp = async (): Promise<void> => {
+    clientLogger.info('Initializing Oblique Strategies application');
     loadFavorites();
     await getRandomStrategy();
 
@@ -84,6 +96,8 @@ export const useObliqueStore = defineStore('oblique', () => {
     window.addEventListener('resize', () => {
       setMobileState(window.innerWidth < 600);
     });
+
+    clientLogger.info('Application initialization complete');
   };
 
   return {

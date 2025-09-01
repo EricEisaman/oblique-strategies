@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import path from 'path';
+import { serverLogger } from './utils/logger';
 
 const app = express();
 const PORT = process.env['PORT'] ?? 5000;
@@ -127,6 +128,7 @@ app.get('/api/strategies', (_req, res) => {
     'Your mistake was a hidden intention',
   ];
 
+  serverLogger.info('Strategies endpoint accessed', { count: strategies.length });
   res.json({ strategies });
 });
 
@@ -236,6 +238,7 @@ app.get('/api/strategies/random', (_req, res) => {
   ];
 
   const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
+  serverLogger.info('Random strategy requested', { strategy: randomStrategy });
   res.json({ strategy: randomStrategy });
 });
 
@@ -245,5 +248,5 @@ app.get('*', (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  // Use logger service instead of console.log
+  serverLogger.info('Server started successfully', { port: PORT });
 });
