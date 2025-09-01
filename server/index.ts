@@ -16,7 +16,10 @@ app.use(cors());
 app.use(morgan('combined'));
 
 // Serve static files from the client dist directory
-app.use(express.static(path.join(__dirname, '../client/dist')));
+const staticPath = path.join(__dirname, '../client/dist');
+console.log('Static files path:', staticPath);
+console.log('Static files exist:', require('fs').existsSync(staticPath));
+app.use(express.static(staticPath));
 
 // Health check endpoint
 app.get('/api/health', (_req, res) => {
@@ -244,7 +247,10 @@ app.get('/api/strategies/random', (_req, res) => {
 
 // Serve the Vue app for all other routes
 app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  const indexPath = path.join(__dirname, '../client/dist/index.html');
+  console.log('Index file path:', indexPath);
+  console.log('Index file exists:', require('fs').existsSync(indexPath));
+  res.sendFile(indexPath);
 });
 
 app.listen(PORT, () => {

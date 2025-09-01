@@ -15,9 +15,6 @@ RUN cd client && npm install
 # Copy source code
 COPY . .
 
-# Create dist directory
-RUN mkdir -p dist/server
-
 # Build the application (unified build process)
 RUN npm run build
 
@@ -28,6 +25,10 @@ RUN chmod -R 755 client/dist/ && \
     else \
         echo "Warning: client/dist/icons directory not found"; \
     fi
+
+# Verify the build output
+RUN ls -la client/dist/ && \
+    echo "Build verification complete"
 
 # Expose port
 EXPOSE 10000
